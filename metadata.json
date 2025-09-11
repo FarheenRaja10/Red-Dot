@@ -1,0 +1,5 @@
+{
+  "name": "RedDot",
+  "description": "An institution-level precision signals engine for BTC/USD and ETH/USD. RedDot locks onto momentum shifts with a dual-horizon model, routes them through a structural trend filter, and delivers execution-ready cues with volatility-adaptive smoothing and drawdown-aware risk gating. Built for low noise, near-zero lag, and dead-center entries, it highlights decisive breaks, confirms across regimes, and gets you out fast when the tide turns—no clutter, just clean targets for pro-desk execution.",
+  "requestFramePermissions": []
+}
