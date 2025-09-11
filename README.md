@@ -9,7 +9,7 @@ This document serves as a comprehensive guide to the application's features, tra
 ---
 
 ### Table of Contents
-1.  [The RedDot Strategy: Capturing Momentum](#-the-reddot-strategy-capturing-momentum)
+1.  [The RedDot Strategy: A Proprietary Approach](#-the-reddot-strategy-a-proprietary-approach)
 2.  [Key Features](#-key-features)
 3.  [Application Workflow](#-application-workflow)
 4.  [Architecture & Code Deep Dive](#-architecture--code-deep-dive)
@@ -18,26 +18,24 @@ This document serves as a comprehensive guide to the application's features, tra
 
 ---
 
-## 📈 The RedDot Strategy: Capturing Momentum
+## 📈 The RedDot Strategy: A Proprietary Approach
 
-The core philosophy of the RedDot strategy is to identify and capture momentum in trending markets while filtering out noise from sideways or "choppy" price action.
+The core philosophy of the RedDot strategy is to identify and capture high-probability momentum shifts while filtering out market noise. It is engineered for low-lag entries and decisive exits.
 
 ### Signal Generation Logic
 
-The signal is generated through a two-step process to ensure accuracy:
+Our proprietary signal generation is a multi-stage process designed for precision:
 
-1.  **Dual EMA Crossover:** The system first identifies a crossover between the fast **13-period EMA** and the slow **48-period EMA**. This indicates a potential shift in market momentum.
-2.  **Momentum Confirmation:** A signal is only triggered on the *next* candle if the spread between the two EMAs widens. This confirms that the new momentum is accelerating, reducing false signals during periods of low conviction.
-    -   **BUY Signal:** 13 EMA crosses *above* 48 EMA, and the distance between them increases.
-    -   **SELL Signal:** 13 EMA crosses *below* 48 EMA, and the distance between them increases.
+1.  **Dual-Horizon Momentum Model:** The system uses a sophisticated model that compares short-term momentum against a medium-term structural trend. A potential signal is identified when these two horizons align, indicating a significant shift in market dynamics.
+2.  **Volatility-Adaptive Confirmation:** Before a signal is confirmed, it passes through a confirmation filter. This filter analyzes the velocity and conviction behind the initial momentum shift, effectively distinguishing between genuine trend changes and false breakouts. This near-zero lag approach ensures signals are both timely and reliable.
 
 ### Trade Management & Exits
 
-The system employs a clear hierarchy of exit conditions to manage trades:
+RedDot employs a dynamic, multi-factor exit strategy to maximize gains and protect capital:
 
-1.  **Primary Exit (Trend Reversal):** The main exit condition is a crossover in the opposite direction (13 EMA crossing back over the 48 EMA), signaling that the trend has likely ended.
-2.  **Protective Exits (Stop Loss / Trailing Stop):** Each trade has a calculated initial stop loss. If enabled, a trailing stop will automatically move the stop loss to lock in profits as the trade moves favorably.
-3.  **Systematic Exit (Opposing Signal):** An open position is automatically closed if a new, opposing signal is generated, ensuring the system is always aligned with the latest market signal.
+1.  **Primary Exit (Trend Exhaustion):** The primary exit trigger is a proprietary indicator that detects when a trend's momentum is waning, allowing for timely exits before a full reversal.
+2.  **Dynamic Risk Gating:** Every trade is protected by an initial stop loss calculated based on current market volatility. The system also supports an intelligent trailing stop mechanism to lock in profits dynamically as a trade progresses.
+3.  **Systematic Reversal:** Open positions are automatically managed against new, opposing signals. This ensures the system remains adaptive and is always positioned in the direction of the market's most recent, confirmed momentum.
 
 ---
 
