@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import type { HistoricalTrade, TradingPair } from '../types';
 
@@ -61,6 +62,10 @@ export const SignalHistoryTable: React.FC<SignalHistoryTableProps> = ({ trades, 
         return 'bg-green-500/20 text-green-300';
       case 'Stop Loss':
         return 'bg-red-500/20 text-red-300';
+      case 'Momentum Exhaustion':
+        return 'bg-yellow-500/20 text-yellow-300';
+      case 'Trend Exit':
+        return 'bg-cyan-500/20 text-cyan-300';
       default:
         return 'bg-gray-500/20 text-gray-300';
     }

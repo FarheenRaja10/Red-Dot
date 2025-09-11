@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import type { RiskModel, TradeSettings, TradeType } from '../types';
 import { RISK_PERCENTAGES, LEVERAGE_OPTIONS } from '../constants';
@@ -8,6 +9,7 @@ interface TradeSetupPanelProps extends TradeSettings {
 
 export const TradeSetupPanel: React.FC<TradeSetupPanelProps> = ({
   capital,
+  marginPerTradeUsd,
   riskPercentage,
   riskModel,
   fixedRiskAmount,
@@ -20,6 +22,7 @@ export const TradeSetupPanel: React.FC<TradeSetupPanelProps> = ({
 }) => {
   // Local draft state for the form inputs
   const [draftCapital, setDraftCapital] = useState(capital);
+  const [draftMarginPerTradeUsd, setDraftMarginPerTradeUsd] = useState(marginPerTradeUsd);
   const [draftRiskPercentage, setDraftRiskPercentage] = useState(riskPercentage);
   const [draftRiskModel, setDraftRiskModel] = useState(riskModel);
   const [draftFixedRiskAmount, setDraftFixedRiskAmount] = useState(fixedRiskAmount);
@@ -35,6 +38,7 @@ export const TradeSetupPanel: React.FC<TradeSetupPanelProps> = ({
   // Sync local state if props change from parent
   useEffect(() => {
     setDraftCapital(capital);
+    setDraftMarginPerTradeUsd(marginPerTradeUsd);
     setDraftRiskPercentage(riskPercentage);
     setDraftRiskModel(riskModel);
     setDraftFixedRiskAmount(fixedRiskAmount);
@@ -43,7 +47,7 @@ export const TradeSetupPanel: React.FC<TradeSetupPanelProps> = ({
     setDraftTrailingStopEnabled(trailingStopEnabled);
     setDraftTrailingStopActivation(trailingStopActivation);
     setDraftTrailingStopDistance(trailingStopDistance);
-  }, [capital, riskPercentage, riskModel, fixedRiskAmount, tradeType, leverage, trailingStopEnabled, trailingStopActivation, trailingStopDistance]);
+  }, [capital, marginPerTradeUsd, riskPercentage, riskModel, fixedRiskAmount, tradeType, leverage, trailingStopEnabled, trailingStopActivation, trailingStopDistance]);
 
   // Handle changing trade type and resetting leverage
   const handleTradeTypeChange = (newType: TradeType) => {
@@ -64,6 +68,7 @@ export const TradeSetupPanel: React.FC<TradeSetupPanelProps> = ({
 
   const hasChanges =
     draftCapital !== capital ||
+    draftMarginPerTradeUsd !== marginPerTradeUsd ||
     draftRiskPercentage !== riskPercentage ||
     draftRiskModel !== riskModel ||
     draftFixedRiskAmount !== fixedRiskAmount ||
@@ -77,6 +82,7 @@ export const TradeSetupPanel: React.FC<TradeSetupPanelProps> = ({
     setSaveStatus('saving');
     onSave({
       capital: draftCapital,
+      marginPerTradeUsd: draftMarginPerTradeUsd,
       riskPercentage: draftRiskPercentage,
       riskModel: draftRiskModel,
       fixedRiskAmount: draftFixedRiskAmount,
@@ -101,7 +107,7 @@ export const TradeSetupPanel: React.FC<TradeSetupPanelProps> = ({
     }
   }
 
-  const notionalCapital = useMemo(() => draftCapital * draftLeverage, [draftCapital, draftLeverage]);
+  const notionalCapital = useMemo(() => draftMarginPerTradeUsd * draftLeverage, [draftMarginPerTradeUsd, draftLeverage]);
   const currentLeverageOptions = LEVERAGE_OPTIONS[draftTradeType];
   
   return (
@@ -114,7 +120,7 @@ export const TradeSetupPanel: React.FC<TradeSetupPanelProps> = ({
         {/* Capital Input */}
         <div>
           <label htmlFor="capital" className="block text-sm font-medium text-gray-300 mb-2">
-            Total Trading Capital (USD)
+            Portfolio (USD)
           </label>
           <div className="relative">
             <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">$</span>
@@ -129,6 +135,31 @@ export const TradeSetupPanel: React.FC<TradeSetupPanelProps> = ({
             />
           </div>
         </div>
+
+        {/* Margin per Trade Input */}
+        <div>
+          <label htmlFor="marginPerTrade" className="block text-sm font-medium text-gray-300 mb-2">
+            Margin per Trade (USD)
+          </label>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">$</span>
+            <input
+              type="number"
+              id="marginPerTrade"
+              name="marginPerTrade"
+              className="w-full bg-gray-900 border border-gray-600 rounded-md py-2 pl-7 pr-4 text-white focus:ring-brand-blue focus:border-brand-blue"
+              value={draftMarginPerTradeUsd}
+              onChange={handleNumericInputChange(setDraftMarginPerTradeUsd)}
+              min="0"
+            />
+          </div>
+          <p className="mt-2 text-xs text-gray-400">
+            {draftCapital > 0 && draftMarginPerTradeUsd > 0
+              ? `Using ${((draftMarginPerTradeUsd / draftCapital) * 100).toFixed(1)}% of your portfolio per trade.`
+              : 'Set your portfolio and margin to see the allocation percentage.'}
+          </p>
+        </div>
+
 
         {/* Trade Type Selection */}
         <div>
@@ -179,7 +210,7 @@ export const TradeSetupPanel: React.FC<TradeSetupPanelProps> = ({
         <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-600 text-center">
             <p className="text-sm font-medium text-gray-400">Notional Capital</p>
             <p className="text-3xl font-bold text-white my-1">${notionalCapital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-            <p className="text-xs text-gray-500 font-mono">${draftCapital.toLocaleString()} (Capital) &times; {draftLeverage}x (Leverage)</p>
+            <p className="text-xs text-gray-500 font-mono">${draftMarginPerTradeUsd.toLocaleString()} (Margin) &times; {draftLeverage}x (Leverage)</p>
         </div>
 
         {/* Risk Model Selection */}

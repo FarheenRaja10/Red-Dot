@@ -1,3 +1,4 @@
+
 // Fix: Replaced the entire content of types.ts with the correct, centralized type definitions.
 // The previous content was a copy of another utility file, causing circular dependencies and preventing types from being exported.
 // This single change resolves all type-related errors across the application by providing the missing exported types.
@@ -83,6 +84,7 @@ export type TradeType = 'spot' | 'margin' | 'contracts';
  */
 export interface TradeSettings {
   capital: number;
+  marginPerTradeUsd: number;
   riskPercentage: number;
   riskModel: RiskModel;
   fixedRiskAmount: number;
@@ -105,7 +107,7 @@ export interface HistoricalTrade {
   profitOrLossPercentage?: number; // Optional: Unrealized P/L for open trades
   type: 'BUY' | 'SELL';
   stopLoss: number;
-  exitReason?: 'Reversal' | 'Trailing Stop' | 'Stop Loss';
+  exitReason?: 'Reversal' | 'Trailing Stop' | 'Stop Loss' | 'Momentum Exhaustion' | 'Trend Exit';
 }
 
 /**

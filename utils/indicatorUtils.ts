@@ -1,4 +1,5 @@
 
+
 import type { PriceData, ChartDataPoint, Signal } from '../types';
 import { EMA_PERIOD_FAST, EMA_PERIOD_SLOW, EMA_PERIOD_TREND } from '../constants';
 
@@ -42,19 +43,34 @@ export const addIndicators = (data: PriceData[]): ChartDataPoint[] => {
     ema200: emaTrend[i],
   }));
 
-  // Add signal markers
-  for (let i = 1; i < dataWithIndicators.length; i++) {
+  // Add signal markers based on crossover + momentum confirmation
+  // We start at index 2 to look at the previous two bars for a confirmed crossover.
+  for (let i = 2; i < dataWithIndicators.length; i++) {
+    const prevPrev = dataWithIndicators[i - 2];
     const prev = dataWithIndicators[i - 1];
     const current = dataWithIndicators[i];
 
-    if (prev.ema13 && prev.ema48 && current.ema13 && current.ema48) {
-      // Buy signal: fast EMA crosses above slow EMA
-      if (prev.ema13 <= prev.ema48 && current.ema13 > current.ema48) {
-        current.signal = 'BUY';
-      }
-      // Sell signal: fast EMA crosses below slow EMA
-      else if (prev.ema13 >= prev.ema48 && current.ema13 < current.ema48) {
-        current.signal = 'SELL';
+    if (prevPrev.ema13 && prevPrev.ema48 && prev.ema13 && prev.ema48 && current.ema13 && current.ema48) {
+      
+      // Condition 1: Check for a crossover on the PREVIOUS bar.
+      const crossoverUp = prevPrev.ema13 <= prevPrev.ema48 && prev.ema13 > prev.ema48;
+      const crossoverDown = prevPrev.ema13 >= prevPrev.ema48 && prev.ema13 < prev.ema48;
+
+      if (crossoverUp) {
+        // Condition 2: Confirm momentum by checking if the spread widened on the CURRENT bar.
+        const prevSpread = prev.ema13 - prev.ema48;
+        const currentSpread = current.ema13 - current.ema48;
+        if (currentSpread > prevSpread) {
+          // Signal is marked on the current (confirmation) bar.
+          current.signal = 'BUY';
+        }
+      } else if (crossoverDown) {
+        // Symmetrical check for a sell signal.
+        const prevSpread = prev.ema13 - prev.ema48;
+        const currentSpread = current.ema13 - current.ema48;
+        if (currentSpread < prevSpread) {
+          current.signal = 'SELL';
+        }
       }
     }
   }
